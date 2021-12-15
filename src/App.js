@@ -6,6 +6,7 @@ import SelectCharacter from "./Components/SelectCharacter";
 import { CONTRACT_ADDRESS, transformCharacterData } from "./constants";
 import myEpicGame from "./utils/MyEpicGame.json";
 import { ethers } from "ethers";
+import LoadingIndicator from "./Components/LoadingIndicator";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
@@ -14,6 +15,7 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 const App = () => {
   const [currAccount, setCurrAccount] = React.useState(null);
   const [characterNFT, setCharacterNFT] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const checkNetwork = async () => {
     try {
@@ -30,6 +32,7 @@ const App = () => {
       const { ethereum } = window;
       if (!ethereum) {
         console.log("make you you hv metamask");
+        setIsLoading(false);
         return;
       } else {
         console.log("metamask is connected, we hv eth obj", ethereum);
@@ -47,9 +50,12 @@ const App = () => {
     } catch (err) {
       console.log("error", err);
     }
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
+    setIsLoading(true);
     checkIfWalletIsConntected();
   }, []);
 
@@ -74,6 +80,7 @@ const App = () => {
       } else {
         console.log("user does not have character nft");
       }
+      setIsLoading(false);
     };
 
     if (currAccount) {
@@ -83,6 +90,10 @@ const App = () => {
   }, [currAccount]);
 
   const renderContent = () => {
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
+
     if (!currAccount) {
       return (
         <div className="connect-wallet-container">
@@ -136,7 +147,8 @@ const App = () => {
           </p>
           <p className="sub-text">
             "BoJack, when you get sad, you run straight ahead and you keep
-            running forward
+            running forward, no matter what... Don't you ever stop running and
+            don't you ever look behind you... All that exists is what's ahead."
           </p>
           {renderContent()}
         </div>

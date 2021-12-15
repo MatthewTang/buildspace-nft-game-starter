@@ -3,6 +3,7 @@ import "./SelectCharacter.css";
 import { ethers } from "ethers";
 import { CONTRACT_ADDRESS, transformCharacterData } from "../../constants";
 import myEpicGame from "../../utils/MyEpicGame.json";
+import LoadingIndicator from "../LoadingIndicator";
 
 /*
  * Don't worry about setCharacterNFT just yet, we will talk about it soon!
@@ -10,6 +11,7 @@ import myEpicGame from "../../utils/MyEpicGame.json";
 const SelectCharacter = ({ setCharacterNFT }) => {
   const [characters, setCharacters] = useState([]);
   const [gameContract, setGameContract] = useState(null);
+  const [minting, setMinting] = useState(false);
 
   useEffect(() => {
     const { ethereum } = window;
@@ -80,7 +82,10 @@ const SelectCharacter = ({ setCharacterNFT }) => {
         <div>
           <p>{character.name}</p>
         </div>
-        <img src={character.imageURI} alt={character.name} />
+        <img
+          src={`https://cloudflare-ipfs.com/ipfs/${character.imageURI}`}
+          alt={character.name}
+        />
         <button
           type="button"
           className="character-mint-button"
@@ -94,13 +99,16 @@ const SelectCharacter = ({ setCharacterNFT }) => {
   const mintCharacterNFTAction = (characterIndex) => async () => {
     try {
       if (gameContract) {
+        setMinting(true);
         console.log("minting character");
         const mintTx = await gameContract.mintCharacterNFT(characterIndex);
         await mintTx.wait();
         console.log("mintTx:", mintTx);
+        setMinting(false);
       }
     } catch (error) {
       console.log("some error when minting character:", error);
+      setMinting(false);
     }
   };
 
@@ -109,6 +117,18 @@ const SelectCharacter = ({ setCharacterNFT }) => {
       <h2>Mint Your Hero. Choose wisely.</h2>
       {characters.length > 0 && (
         <div className="character-grid">{renderCharacters()}</div>
+      )}
+      {minting && (
+        <div className="loading">
+          <div className="indicator">
+            <LoadingIndicator />
+            <p>Minting In Progress...</p>
+          </div>
+          <img
+            src="https://media.giphy.com/media/ksw8FL1miIlTzNxe7A/giphy.gif"
+            alt="Minting loading indicator"
+          />
+        </div>
       )}
     </div>
   );
