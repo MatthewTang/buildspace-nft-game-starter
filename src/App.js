@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import twitterLogo from "./assets/twitter-logo.svg";
 import "./App.css";
+import Arena from "./Components/Arena";
 import SelectCharacter from "./Components/SelectCharacter";
 import { CONTRACT_ADDRESS, transformCharacterData } from "./constants";
 import myEpicGame from "./utils/MyEpicGame.json";
@@ -99,6 +100,10 @@ const App = () => {
       );
     } else if (currAccount && !characterNFT) {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+    } else if (currAccount && characterNFT) {
+      return (
+        <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />
+      );
     }
   };
 
@@ -131,12 +136,11 @@ const App = () => {
           </p>
           <p className="sub-text">
             "BoJack, when you get sad, you run straight ahead and you keep
-            running forward, no matter what... Don't you ever stop running and
-            don't you ever look behind you... All that exists is what's ahead.
+            running forward
           </p>
+          {renderContent()}
         </div>
         <div className="footer-container">
-          {renderContent()}
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
           <a
             className="footer-text"
